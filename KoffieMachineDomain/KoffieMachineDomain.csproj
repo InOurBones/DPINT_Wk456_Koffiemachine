@@ -50,5 +50,6 @@
     <Compile Include="Strength.cs" />
     <Compile Include="WienerMelange.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

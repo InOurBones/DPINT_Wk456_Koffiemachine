@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace KoffieMachineDomain
 {
     public class Coffee : Drink
     {
-        
+
         public virtual bool HasSugar { get; set; }
         public virtual Amount SugarAmount { get; set; }
         public virtual bool HasMilk { get; set; }
