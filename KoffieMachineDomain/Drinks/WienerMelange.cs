@@ -6,8 +6,7 @@
 
         public WienerMelange()
         {
-            HasSugar = false;
-            DrinkStrength = Strength.Weak;
+            Strength = Strength.Weak;
         }
 
         public override double GetPrice()

@@ -2,7 +2,7 @@
 
 namespace KoffieMachineDomain
 {
-    public class CafeAuLait : Drink
+    public class CafeAuLait : BaseDrink
     {
         public override string Name => "Café au Lait";
 
@@ -16,7 +16,6 @@ namespace KoffieMachineDomain
             base.LogDrinkMaking(log);
             log.Add("Filling half with coffee...");
             log.Add("Filling other half with milk...");
-            log.Add($"Finished making {Name}");
         }
     }
 }
