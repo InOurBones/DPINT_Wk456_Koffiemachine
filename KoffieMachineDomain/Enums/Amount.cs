@@ -2,6 +2,6 @@
 {
     public enum Amount
     {
-        Normal = 0, Few, Extra
+        Normal = 2, Few = 1, Extra = 3
     }
 }

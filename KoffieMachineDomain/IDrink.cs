@@ -9,7 +9,7 @@ namespace KoffieMachineDomain
     public interface IDrink
     {
         double Price { get; }
-        
+
         string Name { get; }
 
         double GetPrice();

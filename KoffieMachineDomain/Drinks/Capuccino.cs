@@ -6,6 +6,10 @@ namespace KoffieMachineDomain
     {
         public override string Name => "Capuccino";
 
+        public Strength Strength { get; set; }
+
+        public override double Price => 0.8;
+
         public Capuccino()
         {
             Strength = Strength.Normal;
@@ -13,8 +17,9 @@ namespace KoffieMachineDomain
 
         public override double GetPrice()
         {
-            return BaseDrinkPrice + 0.8;
+            return base.GetPrice();
         }
+
         public override void LogDrinkMaking(ICollection<string> log)
         {
             base.LogDrinkMaking(log);

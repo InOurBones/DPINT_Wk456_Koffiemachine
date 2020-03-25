@@ -4,18 +4,16 @@ namespace KoffieMachineDomain
 {
     public class Coffee : BaseDrink
     {
-        public virtual Strength DrinkStrength { get; set; }
         public override string Name => "Koffie";
 
-        public override double GetPrice()
-        {
-            return BaseDrinkPrice;
-        }
+        public Strength Strength { get; set; }
+
+        public override double Price => 0;
 
         public override void LogDrinkMaking(ICollection<string> log)
         {
             base.LogDrinkMaking(log);
-            log.Add($"Setting coffee strength to {DrinkStrength}.");
+            log.Add($"Setting coffee strength to {Strength}.");
             log.Add("Filling with coffee...");
         }
     }

@@ -14,8 +14,9 @@ namespace KoffieMachineDomain
 
         public override string Name => "Milk";
 
-        public MilkDecorator(IDrink drink) : base(drink)
+        public MilkDecorator(IDrink drink, Amount amount) : base(drink)
         {
+            Amount = amount;
         }
     }
 }

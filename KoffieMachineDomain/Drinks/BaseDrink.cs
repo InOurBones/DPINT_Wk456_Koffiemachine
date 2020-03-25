@@ -6,13 +6,16 @@ namespace KoffieMachineDomain
     {
         protected const double BaseDrinkPrice = 1.0;
 
-        public virtual double Price { get; set; }
-        public virtual Strength Strength { get; set; }
-        public virtual string Name { get; set; }
+        public abstract double Price { get; }
+
+        public abstract string Name { get; }
 
         public string GetName() => Name;
 
-        public abstract double GetPrice();
+        public virtual double GetPrice()
+        {
+            return BaseDrinkPrice + Price;
+        }
 
         public virtual void LogDrinkMaking(ICollection<string> log)
         {

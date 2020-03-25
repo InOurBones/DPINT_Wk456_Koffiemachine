@@ -2,6 +2,6 @@
 {
     public enum Strength
     {
-        Normal = 0, Weak, Strong
+        Normal = 2, Weak = 1, Strong = 3
     }
 }

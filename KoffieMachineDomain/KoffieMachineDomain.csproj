@@ -40,7 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DrinkFactory.cs" />
+    <Compile Include="Decorators\TeaBlendDecorator.cs" />
+    <Compile Include="Dispenser Library\Color.cs" />
+    <Compile Include="Dispenser Library\HotChocolate.cs" />
+    <Compile Include="Dispenser Library\Tea.cs" />
+    <Compile Include="Dispenser Library\TeaBlend.cs" />
+    <Compile Include="Dispenser Library\TeaBlendRepository.cs" />
+    <Compile Include="Drinks\Chocolate.cs" />
+    <Compile Include="Drinks\TeaDrink.cs" />
     <Compile Include="Enums\Amount.cs" />
     <Compile Include="Decorators\BaseDecorator.cs" />
     <Compile Include="Drinks\CafeAuLait.cs" />

@@ -6,16 +6,17 @@ namespace KoffieMachineDomain
     {
         public override string Name => "Espresso";
 
-        public override double GetPrice()
-        {
-            return BaseDrinkPrice + 0.7;
-        }
+        public Strength Strength => Strength.Strong;
+
+        public Amount Amount => Amount.Few;
+
+        public override double Price => 0.7;
 
         public override void LogDrinkMaking(ICollection<string> log)
         {
             base.LogDrinkMaking(log);
-            log.Add($"Setting coffee strength to {Strength.Strong}.");
-            log.Add($"Setting coffee amount to {Amount.Few}.");
+            log.Add($"Setting coffee strength to {Strength}.");
+            log.Add($"Setting coffee amount to {Amount}.");
             log.Add("Filling with coffee...");
 
             log.Add("Creaming milk...");

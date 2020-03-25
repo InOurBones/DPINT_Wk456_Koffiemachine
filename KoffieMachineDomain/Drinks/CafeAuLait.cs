@@ -6,10 +6,7 @@ namespace KoffieMachineDomain
     {
         public override string Name => "Café au Lait";
 
-        public override double GetPrice()
-        {
-            return BaseDrinkPrice + 0.5;
-        }
+        public override double Price => 0.5;
 
         public override void LogDrinkMaking(ICollection<string> log)
         {

@@ -12,13 +12,14 @@ namespace Dpint_wk456_KoffieMachine.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private DrinkFactory _drinkFactory;
-        private Dictionary<string, double> _cashOnCards;
-        public ObservableCollection<string> LogText { get; private set; }
+        private PaymentHandler _paymentHandler;
 
+        public ObservableCollection<string> LogText { get; private set; }
 
         public MainViewModel()
         {
             _drinkFactory = new DrinkFactory();
+            _paymentHandler = new PaymentHandler();
 
             LogText = new ObservableCollection<string>
             {
@@ -26,154 +27,125 @@ namespace Dpint_wk456_KoffieMachine.ViewModel
                 "Done, what would you like to drink?"
             };
 
-            _cashOnCards = new Dictionary<string, double>
-            {
-                ["Arjen"] = 5.0,
-                ["Bert"] = 3.5,
-                ["Chris"] = 7.0,
-                ["Daan"] = 6.0
-            };
-
-            PaymentCardUsernames = new ObservableCollection<string>(_cashOnCards.Keys);
-            SelectedPaymentCardUsername = PaymentCardUsernames[0];
+            PaymentCardUsernames = new ObservableCollection<string>(_paymentHandler.CashOnCards.Keys);
+            TeaBlendOptions = new ObservableCollection<string>(_drinkFactory.TeaBlendRepository.BlendNames);
         }
 
         #region Drink Properties
-        private IDrink _selectedDrink;
         public string SelectedDrinkName
         {
-            get { return _selectedDrink?.Name; }
+            get { return _drinkFactory.SelectedDrink?.Name; }
         }
 
         public double? SelectedDrinkPrice
         {
-            get { return _selectedDrink?.GetPrice(); }
+            get { return _drinkFactory.SelectedDrink?.GetPrice(); }
         }
         #endregion Drink properties to bind to
 
         #region Payment
         public RelayCommand PayByCardCommand => new RelayCommand(() =>
         {
-            PayDrink(payWithCard: true);
+            if (_drinkFactory.SelectedDrink != null)
+            {
+                if (_paymentHandler.payByCard(LogText)) DrinkPaid();
+                RaisePropertyChanged(() => PaymentCardRemainingAmount);
+            }
         });
 
         public ICommand PayByCoinCommand => new RelayCommand<double>(coinValue =>
         {
-            PayDrink(payWithCard: false, insertedMoney: coinValue);
+            if (_drinkFactory.SelectedDrink != null)
+                if (_paymentHandler.payByCoin(LogText, coinValue)) DrinkPaid();
         });
 
-        private void PayDrink(bool payWithCard, double insertedMoney = 0)
+        private void DrinkPaid()
         {
-            if (_selectedDrink != null && payWithCard)
-            {
-                insertedMoney = _cashOnCards[SelectedPaymentCardUsername];
-                if (RemainingPriceToPay <= insertedMoney)
-                {
-                    _cashOnCards[SelectedPaymentCardUsername] = insertedMoney - RemainingPriceToPay;
-                    RemainingPriceToPay = 0;
-                }
-                else // Pay what you can, fill up with coins later.
-                {
-                    _cashOnCards[SelectedPaymentCardUsername] = 0;
-
-                    RemainingPriceToPay -= insertedMoney;
-                }
-                LogText.Add($"Inserted {insertedMoney.ToString("C", CultureInfo.CurrentCulture)}, Remaining: {RemainingPriceToPay.ToString("C", CultureInfo.CurrentCulture)}.");
-                RaisePropertyChanged(() => PaymentCardRemainingAmount);
-            }
-            else if (_selectedDrink != null && !payWithCard)
-            {
-                RemainingPriceToPay = Math.Max(Math.Round(RemainingPriceToPay - insertedMoney, 2), 0);
-                LogText.Add($"Inserted {insertedMoney.ToString("C", CultureInfo.CurrentCulture)}, Remaining: {RemainingPriceToPay.ToString("C", CultureInfo.CurrentCulture)}.");
-            }
-
-            if (_selectedDrink != null && RemainingPriceToPay == 0)
-            {
-                _selectedDrink.LogDrinkMaking(LogText);
-                LogText.Add($"Finished making {_selectedDrink.GetName()}");
-                LogText.Add("------------------");
-                _selectedDrink = null;
-            }
+            _drinkFactory.SelectedDrink.LogDrinkMaking(LogText);
+            LogText.Add($"Finished making {_drinkFactory.SelectedDrink.GetName()}");
+            LogText.Add("------------------");
+            _drinkFactory.SelectedDrink = null;
         }
 
-        public double PaymentCardRemainingAmount => _cashOnCards.ContainsKey(SelectedPaymentCardUsername ?? "") ? _cashOnCards[SelectedPaymentCardUsername] : 0;
+        public ObservableCollection<string> PaymentCardUsernames { get; }
 
-        public ObservableCollection<string> PaymentCardUsernames { get; set; }
-        private string _selectedPaymentCardUsername;
+        public double PaymentCardRemainingAmount => _paymentHandler.PaymentCardRemainingAmount;
+
         public string SelectedPaymentCardUsername
         {
-            get { return _selectedPaymentCardUsername; }
+            get { return _paymentHandler.SelectedPaymentCardUsername; }
             set
             {
-                _selectedPaymentCardUsername = value;
+                _paymentHandler.SelectedPaymentCardUsername = value;
                 RaisePropertyChanged(() => SelectedPaymentCardUsername);
                 RaisePropertyChanged(() => PaymentCardRemainingAmount);
             }
         }
 
-        private double _remainingPriceToPay;
         public double RemainingPriceToPay
         {
-            get { return _remainingPriceToPay; }
-            set { _remainingPriceToPay = value; RaisePropertyChanged(() => RemainingPriceToPay); }
+            get { return _paymentHandler.RemainingPriceToPay; }
+            set { _paymentHandler.RemainingPriceToPay = value; RaisePropertyChanged(() => RemainingPriceToPay); }
         }
         #endregion Payment
 
         #region Coffee buttons
-        
+
         public Strength CoffeeStrength
         {
             get { return _drinkFactory.CoffeeStrength; }
             set { _drinkFactory.CoffeeStrength = value; RaisePropertyChanged(() => CoffeeStrength); }
         }
 
-        
         public Amount SugarAmount
         {
             get { return _drinkFactory.SugarAmount; }
             set { _drinkFactory.SugarAmount = value; RaisePropertyChanged(() => SugarAmount); }
         }
 
-        
         public Amount MilkAmount
         {
             get { return _drinkFactory.MilkAmount; }
             set { _drinkFactory.MilkAmount = value; RaisePropertyChanged(() => MilkAmount); }
         }
-        
+
+        public ObservableCollection<string> TeaBlendOptions { get; }
+
+        public string SelectedTeaBlendOption
+        {
+            get { return _drinkFactory.SelectedTeaBlendOption; }
+            set { _drinkFactory.SelectedTeaBlendOption = value; RaisePropertyChanged(() => SelectedTeaBlendOption); }
+        }
+
         private void UpdateInfoAfterNewDrink()
         {
-            if (_selectedDrink != null)
-            {
-                RemainingPriceToPay = _selectedDrink.GetPrice();
-                LogText.Add($"Selected {_selectedDrink.GetName()}, price: {RemainingPriceToPay.ToString("C", CultureInfo.CurrentCulture)}");
-                RaisePropertyChanged(() => RemainingPriceToPay);
-                RaisePropertyChanged(() => SelectedDrinkName);
-                RaisePropertyChanged(() => SelectedDrinkPrice);
-            }
+            RemainingPriceToPay = _drinkFactory.SelectedDrink.GetPrice();
+            LogText.Add($"Selected {_drinkFactory.SelectedDrink.GetName()}, price: {RemainingPriceToPay.ToString("C", CultureInfo.CurrentCulture)}");
+            RaisePropertyChanged(() => SelectedDrinkName);
+            RaisePropertyChanged(() => SelectedDrinkPrice);
         }
 
         public ICommand DrinkCommand => new RelayCommand<string>((drinkName) =>
         {
-            _selectedDrink = _drinkFactory.CreateDrink(drinkName, false, false, LogText);
+            _drinkFactory.CreateDrink(drinkName, LogText);
             UpdateInfoAfterNewDrink();
         });
 
         public ICommand DrinkWithSugarCommand => new RelayCommand<string>((drinkName) =>
         {
-            _selectedDrink = _drinkFactory.CreateDrink(drinkName, true, false, LogText);
+            _drinkFactory.CreateDrink(drinkName, LogText, hasSugar: true);
             UpdateInfoAfterNewDrink();
         });
 
         public ICommand DrinkWithMilkCommand => new RelayCommand<string>((drinkName) =>
         {
-            _selectedDrink = _drinkFactory.CreateDrink(drinkName, false, true, LogText);
+            _drinkFactory.CreateDrink(drinkName, LogText, hasMilk: true);
             UpdateInfoAfterNewDrink();
         });
 
         public ICommand DrinkWithSugarAndMilkCommand => new RelayCommand<string>((drinkName) =>
         {
-            _selectedDrink = _drinkFactory.CreateDrink(drinkName, true, true, LogText);
+            _drinkFactory.CreateDrink(drinkName, LogText, hasSugar: true, hasMilk: true);
             UpdateInfoAfterNewDrink();
         });
         #endregion Coffee buttons
