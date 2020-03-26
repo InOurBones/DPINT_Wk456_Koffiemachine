@@ -11,6 +11,8 @@ namespace KoffieMachineDomain
 {
     public class DrinkFactory : ViewModelBase
     {
+        private FileHandler _fh;
+
         private string _drinkName;
 
         private Strength _coffeeStrength;
@@ -58,6 +60,8 @@ namespace KoffieMachineDomain
 
             _teaBlendRepository = new TeaBlendRepository();
             SelectedTeaBlendOption = _teaBlendRepository.BlendNames.First();
+
+            _fh = new FileHandler();
         }
 
         public void CreateDrink(string drinkName, ICollection<string> log, bool hasSugar = false, bool hasMilk = false)
@@ -102,8 +106,8 @@ namespace KoffieMachineDomain
                         drink = new TeaDrink(teaBlend);
                     break;
                 default:
-                    //log.Add($"Could not make {drinkName}, recipe not found.");
-                    return;
+                    drink = _fh.GetBaseDrink(_drinkName);
+                    break; ;
             }
 
             if (_hasSugar)
